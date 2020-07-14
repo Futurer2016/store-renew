@@ -27,7 +27,7 @@ export const renew = (state, keyPath, data) => {
     return { ...state, [keyPath]: data }
   }
   const property = keyArr[0]
-  const newState = replace(state[property], keyArr.slice(1).join('.'), data)
+  const newState = renew(state[property], keyArr.slice(1).join('.'), data)
   if (newState === state[property]) {
     return state
   }
