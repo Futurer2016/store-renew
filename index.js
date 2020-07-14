@@ -7,14 +7,14 @@
 export const renew = (state, keyPath, data) => {
   const keyArr = keyPath.split('.')
   if (keyArr.length === 1) {
-    // 数组类型
+    // array
     if (Array.isArray(state)) {
       const copyState = state.slice()
       typeof data === 'undefined' ? copyState.splice(keyPath, 1) : copyState.splice(keyPath, 1, data)
       return copyState
     }
-    // 对象类型
-    // data删除
+    // object below
+    // delete
     if (typeof data === 'undefined') {
       return Object.keys(state).reduce((pre, key) => {
         if (key !== keyPath) {
@@ -23,7 +23,7 @@ export const renew = (state, keyPath, data) => {
         return pre
       }, {})
     }
-    // data替换
+    // replace
     return { ...state, [keyPath]: data }
   }
   const property = keyArr[0]
