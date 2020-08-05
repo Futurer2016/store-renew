@@ -29,7 +29,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @param {*} keyPath
  * @param {*} data
  */
-var renew = function renew(state, keyPath, data) {
+var renew = function renew(state, keyPath, data, config) {
   var keyArr = keyPath.split('.');
 
   if (keyArr.length === 1) {
@@ -60,14 +60,31 @@ var renew = function renew(state, keyPath, data) {
   var s = state[property]; // state 空值处理
 
   if (typeof s === 'undefined') {
-    if (isNaN(+keyArr[1])) {
-      s = {};
+    if (config && config.types) {
+      var type = config.types[0];
+
+      switch (type) {
+        case 'array':
+          s = [];
+          break;
+
+        default:
+          s = {};
+      }
     } else {
-      s = [];
+      s = {};
     }
   }
 
-  var newState = renew(s, keyArr.slice(1).join('.'), data);
+  var newConf = config;
+
+  if (newConf) {
+    newConf = _objectSpread(_objectSpread({}, newConf), {}, {
+      types: newConf.types.slice(1)
+    });
+  }
+
+  var newState = renew(s, keyArr.slice(1).join('.'), data, newConf);
 
   if (newState === s) {
     return state;
@@ -85,14 +102,14 @@ var renew = function renew(state, keyPath, data) {
 
 exports.renew = renew;
 
-var reduce = function reduce(reducer) {
+var reduce = function reduce(reducer, config) {
   return function (state, action) {
     var _reducer = reducer(state, action),
         _reducer2 = _slicedToArray(_reducer, 2),
         keyPath = _reducer2[0],
         newState = _reducer2[1];
 
-    return renew(state, keyPath, newState);
+    return renew(state, keyPath, newState, config);
   };
 };
 
