@@ -102,12 +102,13 @@ var renew = function renew(state, keyPath, data, config) {
 
 exports.renew = renew;
 
-var reduce = function reduce(reducer, config) {
+var reduce = function reduce(reducer) {
   return function (state, action) {
     var _reducer = reducer(state, action),
-        _reducer2 = _slicedToArray(_reducer, 2),
+        _reducer2 = _slicedToArray(_reducer, 3),
         keyPath = _reducer2[0],
-        newState = _reducer2[1];
+        newState = _reducer2[1],
+        config = _reducer2[2];
 
     return renew(state, keyPath, newState, config);
   };
