@@ -4,7 +4,7 @@
  * @param {*} keyPath
  * @param {*} data
  */
-export const renew = (state, keyPath, data) => {
+export const renew = (state, keyPath, data, config) => {
   const keyArr = keyPath.split('.')
   if (keyArr.length === 1) {
     // array
@@ -30,13 +30,24 @@ export const renew = (state, keyPath, data) => {
   let s = state[property]
   // state 空值处理
   if (typeof s === 'undefined') {
-    if (isNaN(+keyArr[1])) {
-      s = {}
+    if (config && config.types) {
+      const type = config.types[0]
+      switch (type) {
+      case 'array':
+        s = []
+        break
+      default:
+        s = {}
+      }
     } else {
-      s = []
+      s = {}
     }
   }
-  const newState = renew(s, keyArr.slice(1).join('.'), data)
+  let newConf = config
+  if (newConf) {
+    newConf = { ...newConf, types: newConf.types.slice(1) }
+  }
+  const newState = renew(s, keyArr.slice(1).join('.'), data, newConf)
   if (newState === s) {
     return state
   }
@@ -46,9 +57,9 @@ export const renew = (state, keyPath, data) => {
   return { ...state, [property]: newState }
 }
 // store reducer proxy
-export const reduce = (reducer) => {
-	return (state, action) => {
-	  const [keyPath, newState] = reducer(state, action)
-		return renew(state, keyPath, newState)
-	}
+export const reduce = (reducer, config) => {
+  return (state, action) => {
+    const [keyPath, newState] = reducer(state, action)
+    return renew(state, keyPath, newState, config)
+  }
 }
