@@ -1,0 +1,15 @@
+# mac os
+.DS_Store
+
+# modules
+# node_modules/
+yarn.lock
+
+# output
+
+# IDE
+.vscode/
+.idea/
+
+# tar
+*.tgz

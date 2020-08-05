@@ -57,10 +57,26 @@ var renew = function renew(state, keyPath, data) {
   }
 
   var property = keyArr[0];
-  var newState = renew(state[property], keyArr.slice(1).join('.'), data);
+  var s = state[property]; // state 空值处理
 
-  if (newState === state[property]) {
+  if (typeof s === 'undefined') {
+    if (isNaN(+keyArr[1])) {
+      s = {};
+    } else {
+      s = [];
+    }
+  }
+
+  var newState = renew(s, keyArr.slice(1).join('.'), data);
+
+  if (newState === s) {
     return state;
+  }
+
+  if (Array.isArray(state)) {
+    return state.map(function (item, index) {
+      return String(index) === property ? newState : item;
+    });
   }
 
   return _objectSpread(_objectSpread({}, state), {}, _defineProperty({}, property, newState));

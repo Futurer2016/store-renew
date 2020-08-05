@@ -27,9 +27,21 @@ export const renew = (state, keyPath, data) => {
     return { ...state, [keyPath]: data }
   }
   const property = keyArr[0]
-  const newState = renew(state[property], keyArr.slice(1).join('.'), data)
-  if (newState === state[property]) {
+  let s = state[property]
+  // state 空值处理
+  if (typeof s === 'undefined') {
+    if (isNaN(+keyArr[1])) {
+      s = {}
+    } else {
+      s = []
+    }
+  }
+  const newState = renew(s, keyArr.slice(1).join('.'), data)
+  if (newState === s) {
     return state
+  }
+  if (Array.isArray(state)) {
+    return state.map((item, index) => String(index) === property ? newState : item)
   }
   return { ...state, [property]: newState }
 }
