@@ -57,9 +57,9 @@ export const renew = (state, keyPath, data, config) => {
   return { ...state, [property]: newState }
 }
 // store reducer proxy
-export const reduce = (reducer, config) => {
+export const reduce = (reducer) => {
   return (state, action) => {
-    const [keyPath, newState] = reducer(state, action)
+    const [keyPath, newState, config] = reducer(state, action)
     return renew(state, keyPath, newState, config)
   }
 }
